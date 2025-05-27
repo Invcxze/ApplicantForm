@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h1>{{ form.name }}</h1>
+  <a class="btn" href="{% url 'form_submit' form.pk %}">Заполнить форму</a>
+</div>
+{% endblock %}

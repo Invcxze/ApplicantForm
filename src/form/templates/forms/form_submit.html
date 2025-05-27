@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+  <h1>Заполнить: {{ dynamic_form.name }}</h1>
+  <form method="post" enctype="multipart/form-data" class="form">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-group">
+        {{ field.label_tag }}<br>
+        {{ field }}
+        {% if field.help_text %}
+          <small class="help">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="error">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn">Отправить</button>
+  </form>
+</div>
+{% endblock %}

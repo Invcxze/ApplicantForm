@@ -5,4 +5,7 @@ description = "Add your description here"
 requires-python = ">=3.12"
 dependencies = [
     "django",
+    "django-admin-relation-links>=0.2.5",
+    "django-json-widget>=2.0.1",
+    "psycopg2>=2.9.10",
 ]

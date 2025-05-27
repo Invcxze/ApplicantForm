@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h1>Все формы</h1>
+  <ul class="form-list">
+    {% for form in forms %}
+      <li><a href="{% url 'form_detail' form.pk %}">{{ form.name }}</a></li>
+    {% empty %}
+      <li>Нет доступных форм.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
