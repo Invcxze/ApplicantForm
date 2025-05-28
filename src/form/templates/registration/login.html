@@ -3,11 +3,27 @@
 {% block title %}Вход{% endblock %}
 
 {% block content %}
-<h2>Вход</h2>
-<form method="post">
+<div class="container">
+  <h2>Вход</h2>
+  <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Войти</button>
-</form>
-<a href="{% url 'register' %}" class="link">Нет аккаунта? Зарегистрироваться</a>
+    {% for field in form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.errors %}
+          <div class="error">{{ field.errors|striptags }}</div>
+        {% endif %}
+        {% if field.help_text %}
+          <div class="help">{{ field.help_text }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn">Войти</button>
+  </form>
+  <p style="margin-top: 1rem;">
+    Нет аккаунта?
+    <a href="{% url 'register' %}">Зарегистрироваться</a>
+  </p>
+</div>
 {% endblock %}

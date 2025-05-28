@@ -5,22 +5,30 @@
   <meta charset="UTF-8">
   <title>{% block title %}Формы{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <nav>
-    <a href="{% url 'form_list' %}">Все формы</a>
-    {% if user.is_authenticated %}
-      <span>Привет, {{ user.username }}</span>
-    <form method="post" action="{% url 'logout' %}" style="display:inline;">
-      {% csrf_token %}
-      <button type="submit">Выход</button>
-    </form>
-    {% else %}
-      <a href="{% url 'login' %}">Вход</a>
-      <a href="{% url 'register' %}">Регистрация</a>
-    {% endif %}
-  </nav>
-  <main>
+  <header class="site-header">
+    <div class="nav-container">
+      <div class="left-nav">
+        <a href="{% url 'form_list' %}" class="nav-link logo">Формы</a>
+      </div>
+      <div class="right-nav">
+        {% if user.is_authenticated %}
+          <span class="welcome">Привет, {{ user.username }}</span>
+          <form method="post" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-small">Выход</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="nav-link">Вход</a>
+          <a href="{% url 'register' %}" class="nav-link">Регистрация</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
     {% block content %}{% endblock %}
   </main>
 </body>

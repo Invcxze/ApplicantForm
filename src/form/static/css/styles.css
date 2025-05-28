@@ -18,6 +18,7 @@ nav {
   margin-bottom: 2rem;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 a {
@@ -30,9 +31,9 @@ a:hover {
   text-decoration: underline;
 }
 
-h1 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group {
@@ -44,6 +45,7 @@ input, select, textarea {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 8px;
+  font-size: 1rem;
 }
 
 .btn {
@@ -62,9 +64,93 @@ input, select, textarea {
 .error {
   color: red;
   font-size: 0.9em;
+  margin-top: 0.25rem;
 }
 
 .help {
   font-size: 0.8em;
   color: #666;
+  margin-top: 0.25rem;
+}
+
+body {
+  font-family: sans-serif;
+  background: #f5f7fa;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.site-header {
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.left-nav .logo {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #007acc;
+  text-decoration: none;
+}
+
+.right-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #007acc;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.welcome {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+}
+
+.logout-form {
+  display: inline;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  background-color: #007acc;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.btn:hover {
+  background-color: #005f99;
+}
+
+.btn-small {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.main-content {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
 }
