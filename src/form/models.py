@@ -11,6 +11,10 @@ class DynamicForm(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Динамическая форма"
+        verbose_name_plural = "Динамические формы"
+
 
 class FormField(models.Model):
     FIELD_TYPES = (
@@ -34,6 +38,8 @@ class FormField(models.Model):
 
     class Meta:
         ordering = ["order"]
+        verbose_name = "Поле формы"
+        verbose_name_plural = "Поля форм"
 
     def __str__(self):
         return f"{self.form.name} - {self.label}"
@@ -62,6 +68,10 @@ class FormSubmission(models.Model):
             self.session_key = ""
         super().save(*args, **kwargs)
 
+    class Meta:
+        verbose_name = "Данные формы пользователя"
+        verbose_name_plural = "Данные форм пользователей"
+
 
 class FieldValue(models.Model):
     submission = models.ForeignKey(FormSubmission, on_delete=models.CASCADE, related_name="values")
@@ -76,6 +86,10 @@ class FieldValue(models.Model):
     def __str__(self):
         return f"{self.field.label} - {self.submission}"
 
+    class Meta:
+        verbose_name = "Ответ из формы"
+        verbose_name_plural = "Ответы из форм"
+
 
 class FileValue(models.Model):
     field_value = models.ForeignKey(FieldValue, on_delete=models.CASCADE, related_name="file_values")
@@ -87,3 +101,7 @@ class FileValue(models.Model):
 
     def __str__(self):
         return self.file.name
+
+    class Meta:
+        verbose_name = "Файл из ответа формы"
+        verbose_name_plural = "Файлы из ответов на формы"
