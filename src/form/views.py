@@ -23,6 +23,21 @@ class DynamicFormListView(ListView):
     template_name = "forms/form_list.html"
     context_object_name = "forms"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        if user.is_authenticated:
+            finished_submissions = FormSubmission.objects.filter(user=user).select_related("form")
+        else:
+            session_key = self.request.session.session_key
+            if not session_key:
+                self.request.session.create()
+                session_key = self.request.session.session_key
+            finished_submissions = FormSubmission.objects.filter(session_key=session_key).select_related("form")
+
+        context["finished_submissions"] = finished_submissions
+        return context
+
 
 class DynamicFormDetailView(DetailView):
     model = DynamicForm
@@ -77,8 +92,14 @@ class DynamicFormSubmissionView(View):
         form = form_class(request.POST, request.FILES)
 
         if form.is_valid():
-            # Создаем новую отправку формы
-            submission = FormSubmission.objects.create(form=dynamic_form)
+            if request.user.is_authenticated:
+                submission = FormSubmission.objects.create(form=dynamic_form, user=request.user)
+            else:
+                session_key = request.session.session_key
+                if not session_key:
+                    request.session.create()
+                    session_key = request.session.session_key
+                submission = FormSubmission.objects.create(form=dynamic_form, session_key=session_key)
 
             for field in dynamic_form.fields.all():
                 if field.is_hidden:
@@ -127,10 +148,16 @@ class FormSubmissionUpdateView(View):
     def get_form_class(self, submission):
         fields = {}
         for field in submission.form.fields.all():
+            if field.is_hidden:
+                continue
+
             field_kwargs = {
                 "label": field.label,
                 "required": field.required,
             }
+
+            if field.is_locked:
+                field_kwargs["disabled"] = True
 
             if field.field_type == "text":
                 fields[field.label] = CharField(**field_kwargs)
@@ -152,7 +179,7 @@ class FormSubmissionUpdateView(View):
 
     def get_initial(self, submission):
         initial = {}
-        for value in submission.fieldvalue_set.all():
+        for value in submission.values.all():
             if value.text_value is not None:
                 initial[value.field.label] = value.text_value
             elif value.choice_value:
@@ -174,7 +201,7 @@ class FormSubmissionUpdateView(View):
         form = form_class(request.POST, request.FILES)
 
         if form.is_valid():
-            submission.fieldvalue_set.all().delete()
+            submission.values.all().delete()
 
             for field in submission.form.fields.all():
                 value = form.cleaned_data.get(field.label)

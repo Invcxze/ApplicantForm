@@ -8,6 +8,18 @@
     {% empty %}
       <li>Нет доступных форм.</li>
     {% endfor %}
-  </ul>
+    </ul>
+    <h2>Пройденные формы</h2>
+    <ul class="form-list">
+      {% for submission in finished_submissions %}
+        <li>
+          <a href="{% url 'form_submission_detail' submission.pk %}">
+            {{ submission.form.name }}
+          </a>
+        </li>
+      {% empty %}
+        <li>Нет пройденных форм.</li>
+      {% endfor %}
+    </ul>
 </div>
 {% endblock %}

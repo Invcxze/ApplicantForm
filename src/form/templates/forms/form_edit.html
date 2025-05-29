@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Редактирование формы {{ submission.form.name }}</h1>
+
+    <form method="post" enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div class="form-group">
+            {{ field.label_tag }}<br>
+            {{ field }}
+            {% if field.help_text %}
+            <small>{{ field.help_text }}</small>
+            {% endif %}
+            {% if field.errors %}
+            <div class="error" style="color: red;">
+                {{ field.errors }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <button class="btn" type="submit">Сохранить</button>
+    </form>
+    </br>
+    <a class="btn" href="{% url 'form_submission_detail' submission.pk %}">Отмена</a>
+</div>
+{% endblock %}

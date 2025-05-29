@@ -11,7 +11,6 @@
       {% if value.text_value %}
         <p>{{ value.text_value }}</p>
 
-      {# Список значений (например, множественный выбор) #}
       {% elif value.choice_value %}
         <ul>
           {% for choice in value.choice_value %}
@@ -20,7 +19,6 @@
         </ul>
       {% endif %}
 
-      {# Привязанные файлы #}
       {% for file in file_values %}
         {% if file.field_value_id == value.id %}
           {% if file.is_image %}

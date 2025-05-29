@@ -58,7 +58,9 @@ class FormSubmission(models.Model):
     session_key = models.CharField(max_length=40, blank=True, db_index=True, verbose_name="Ключ сессии")
 
     class Meta:
-        unique_together = [["user", "session_key"]]
+        unique_together = (("user", "session_key"),)
+        verbose_name = "Данные формы пользователя"
+        verbose_name_plural = "Данные форм пользователей"
 
     def __str__(self):
         return f"{self.form.name} - {self.submitted_at}"
@@ -67,10 +69,6 @@ class FormSubmission(models.Model):
         if self.user:
             self.session_key = ""
         super().save(*args, **kwargs)
-
-    class Meta:
-        verbose_name = "Данные формы пользователя"
-        verbose_name_plural = "Данные форм пользователей"
 
 
 class FieldValue(models.Model):
