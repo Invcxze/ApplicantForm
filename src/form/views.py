@@ -201,22 +201,50 @@ class FormSubmissionUpdateView(View):
         form = form_class(request.POST, request.FILES)
 
         if form.is_valid():
-            submission.values.all().delete()
-
             for field in submission.form.fields.all():
+                if field.is_locked:
+                    continue  # 🔒 Игнорируем заблокированные поля
+
                 value = form.cleaned_data.get(field.label)
+                existing_value = FieldValue.objects.filter(submission=submission, field=field).first()
+
+                # Удаление, если значение пустое
+                if value in [None, "", [], (), {}]:
+                    if existing_value:
+                        if field.field_type in ["file", "image"]:
+                            existing_value.files.all().delete()
+                        existing_value.delete()
+                    continue
+
+                # Обновление
                 if field.field_type in ["file", "image"]:
-                    field_value = FieldValue.objects.create(submission=submission, field=field)
+                    field_value, _ = FieldValue.objects.get_or_create(submission=submission, field=field)
+                    field_value.files.all().delete()
                     for uploaded_file in request.FILES.getlist(field.label):
                         FileValue.objects.create(
                             field_value=field_value, file=uploaded_file, is_image=(field.field_type == "image")
                         )
+
                 elif field.field_type == "checkbox":
-                    FieldValue.objects.create(submission=submission, field=field, choice_value=value)
+                    FieldValue.objects.update_or_create(
+                        submission=submission,
+                        field=field,
+                        defaults={"choice_value": value},
+                    )
+
                 elif field.field_type == "select":
-                    FieldValue.objects.create(submission=submission, field=field, choice_value=[value])
+                    FieldValue.objects.update_or_create(
+                        submission=submission,
+                        field=field,
+                        defaults={"choice_value": [value]},
+                    )
+
                 else:
-                    FieldValue.objects.create(submission=submission, field=field, text_value=value)
+                    FieldValue.objects.update_or_create(
+                        submission=submission,
+                        field=field,
+                        defaults={"text_value": value},
+                    )
 
             return redirect("form_submission_detail", pk=submission.pk)
 
