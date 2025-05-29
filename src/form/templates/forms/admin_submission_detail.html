@@ -36,6 +36,42 @@
     </li>
   {% endfor %}
 </ul>
-
+<h2>История изменений</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Дата</th>
+      <th>Пользователь</th>
+      <th>Тип изменения</th>
+      <th>Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for record in history %}
+      <tr>
+        <td>{{ record.history_date|date:"Y-m-d H:i:s" }}</td>
+        <td>
+          {% if record.history_user %}
+            {{ record.history_user.get_full_name|default:record.history_user.username }}
+          {% else %}
+            Система
+          {% endif %}
+        </td>
+        <td>
+          {% if record.history_type == "+" %}
+            Создание
+          {% elif record.history_type == "~" %}
+            Изменение
+          {% elif record.history_type == "-" %}
+            Удаление
+          {% endif %}
+        </td>
+        <td>{{ record.history_change_reason|default:"—" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">История изменений отсутствует</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
 <a href="{% url 'admin_submission_list' %}">← Назад к списку</a>
 {% endblock %}

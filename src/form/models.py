@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import JSONField
+from simple_history.models import HistoricalRecords
 
 
 class DynamicForm(models.Model):
@@ -56,6 +57,7 @@ class FormSubmission(models.Model):
         verbose_name="Аутентифицированный пользователь",
     )
     session_key = models.CharField(max_length=40, blank=True, db_index=True, verbose_name="Ключ сессии")
+    history = HistoricalRecords()
 
     class Meta:
         unique_together = (("user", "session_key"),)

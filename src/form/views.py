@@ -251,6 +251,7 @@ class FormSubmissionUpdateView(View):
 
         return render(request, self.template_name, {"form": form, "submission": submission})
 
+
 class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_staff or self.request.user.is_superuser
@@ -284,4 +285,5 @@ class AdminSubmissionDetailView(AdminRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["field_values"] = FieldValue.objects.filter(submission=self.object).select_related("field")
         context["file_values"] = FileValue.objects.filter(field_value__submission=self.object)
+        context["history"] = self.object.history.all().select_related("history_user")
         return context
