@@ -306,7 +306,9 @@ class AdminSubmissionDetailView(AdminRequiredMixin, DetailView):
                         fv.save()
 
                 elif field_type in ["select", "checkbox"]:
-                    new_value = request.POST.getlist(form_key) if field_type == "checkbox" else request.POST.get(form_key)
+                    new_value = (
+                        request.POST.getlist(form_key) if field_type == "checkbox" else request.POST.get(form_key)
+                    )
                     if new_value != fv.choice_value:
                         fv.choice_value = new_value
                         fv.save()
