@@ -1,4 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, FormView
@@ -249,3 +250,38 @@ class FormSubmissionUpdateView(View):
             return redirect("form_submission_detail", pk=submission.pk)
 
         return render(request, self.template_name, {"form": form, "submission": submission})
+
+class AdminRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+
+class AdminSubmissionListView(AdminRequiredMixin, ListView):
+    model = FormSubmission
+    template_name = "forms/admin_submission_list.html"
+    context_object_name = "submissions"
+    paginate_by = 50
+
+    def get_queryset(self):
+        queryset = FormSubmission.objects.select_related("form", "user").prefetch_related("values__field")
+        form_id = self.request.GET.get("form_id")
+        if form_id:
+            queryset = queryset.filter(form_id=form_id)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["forms"] = DynamicForm.objects.all()
+        return context
+
+
+class AdminSubmissionDetailView(AdminRequiredMixin, DetailView):
+    model = FormSubmission
+    template_name = "forms/admin_submission_detail.html"
+    context_object_name = "submission"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["field_values"] = FieldValue.objects.filter(submission=self.object).select_related("field")
+        context["file_values"] = FileValue.objects.filter(field_value__submission=self.object)
+        return context

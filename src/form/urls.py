@@ -8,6 +8,8 @@ from .views import (
     RegisterView,
     FormSubmissionDetailView,
     FormSubmissionUpdateView,
+    AdminSubmissionListView,
+    AdminSubmissionDetailView,
 )
 
 urlpatterns = [
@@ -20,4 +22,6 @@ urlpatterns = [
     path("submission/<int:pk>/success/", FormSubmissionSuccessView.as_view(), name="form_success"),
     path("submissions/<int:pk>/", FormSubmissionDetailView.as_view(), name="form_submission_detail"),
     path("submissions/<int:pk>/edit/", FormSubmissionUpdateView.as_view(), name="form_submission_edit"),
+    path("admins/submissions/", AdminSubmissionListView.as_view(), name="admin_submission_list"),
+    path("admins/submissions/<int:pk>/", AdminSubmissionDetailView.as_view(), name="admin_submission_detail"),
 ]

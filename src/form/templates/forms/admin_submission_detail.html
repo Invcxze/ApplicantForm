@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Детали отправки #{{ submission.id }}</h1>
+
+<p><strong>Форма:</strong> {{ submission.form.title }}</p>
+<p><strong>Пользователь:</strong> {{ submission.user.username|default:"Аноним" }}</p>
+<p><strong>Дата отправки:</strong> {{ submission.created_at }}</p>
+
+<h2>Ответы:</h2>
+<ul>
+  {% for value in field_values %}
+    <li>
+      <strong>{{ value.field.label }}:</strong>
+      {% if value.text_value %}
+        {{ value.text_value }}
+      {% elif value.choice_value %}
+        {{ value.choice_value|join:", " }}
+      {% endif %}
+      {% if value.field.field_type in "file,image" %}
+        <ul>
+          {% for f in file_values %}
+            {% if f.field_value == value %}
+              <li>
+                <a href="{{ f.file.url }}" target="_blank">
+                  {% if f.is_image %}
+                    <img src="{{ f.file.url }}" width="100">
+                  {% else %}
+                    {{ f.file.name }}
+                  {% endif %}
+                </a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'admin_submission_list' %}">← Назад к списку</a>
+{% endblock %}
