@@ -6,6 +6,8 @@ from .views import (
     DynamicFormSubmissionView,
     FormSubmissionSuccessView,
     RegisterView,
+    FormSubmissionDetailView,
+    FormSubmissionUpdateView,
 )
 
 urlpatterns = [
@@ -16,4 +18,6 @@ urlpatterns = [
     path("form/<int:pk>/", DynamicFormDetailView.as_view(), name="form_detail"),
     path("form/<int:pk>/submit/", DynamicFormSubmissionView.as_view(), name="form_submit"),
     path("submission/<int:pk>/success/", FormSubmissionSuccessView.as_view(), name="form_success"),
+    path("submissions/<int:pk>/", FormSubmissionDetailView.as_view(), name="form_submission_detail"),
+    path("submissions/<int:pk>/edit/", FormSubmissionUpdateView.as_view(), name="form_submission_edit"),
 ]

@@ -93,7 +93,7 @@ class FieldValue(models.Model):
 
 class FileValue(models.Model):
     field_value = models.ForeignKey(FieldValue, on_delete=models.CASCADE, related_name="file_values")
-    file = models.FileField(upload_to="uploads/forms/%Y/%m/%d/")
+    file = models.FileField(upload_to="forms/%Y/%m/%d/")
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     caption = models.CharField(max_length=255, blank=True)

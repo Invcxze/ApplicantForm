@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>Просмотр формы</h2>
+
+  {% for value in field_values %}
+    <div class="form-group">
+      <strong>{{ value.field.label }}:</strong>
+
+      {# Текстовое значение #}
+      {% if value.text_value %}
+        <p>{{ value.text_value }}</p>
+
+      {# Список значений (например, множественный выбор) #}
+      {% elif value.choice_value %}
+        <ul>
+          {% for choice in value.choice_value %}
+            <li>{{ choice }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {# Привязанные файлы #}
+      {% for file in file_values %}
+        {% if file.field_value_id == value.id %}
+          {% if file.is_image %}
+            <div>
+              <img src="{{ file.file.url }}" alt="Изображение" style="max-width: 300px; max-height: 300px;">
+            </div>
+          {% else %}
+            <a href="{{ file.file.url }}">Скачать файл</a>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endfor %}
+
+  <a class="btn" href="{% url 'form_submission_edit' submission.pk %}">Редактировать</a>
+</div>
+{% endblock %}
