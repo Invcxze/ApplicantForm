@@ -1,5 +1,7 @@
+from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.db import transaction
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, FormView
@@ -287,3 +289,27 @@ class AdminSubmissionDetailView(AdminRequiredMixin, DetailView):
         context["file_values"] = FileValue.objects.filter(field_value__submission=self.object)
         context["history"] = self.object.history.all().select_related("history_user")
         return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        field_values = self.object.values.select_related("field")
+
+        with transaction.atomic():
+            for fv in field_values:
+                field_type = fv.field.field_type
+                form_key = f"field_{fv.id}"
+
+                if field_type in ["text", "textarea"]:
+                    new_value = request.POST.get(form_key)
+                    if new_value != fv.text_value:
+                        fv.text_value = new_value
+                        fv.save()
+
+                elif field_type in ["select", "checkbox"]:
+                    new_value = request.POST.getlist(form_key) if field_type == "checkbox" else request.POST.get(form_key)
+                    if new_value != fv.choice_value:
+                        fv.choice_value = new_value
+                        fv.save()
+
+        messages.success(request, "Ответы формы обновлены.")
+        return redirect(request.path)

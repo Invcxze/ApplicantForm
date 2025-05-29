@@ -73,5 +73,31 @@
     {% endfor %}
   </tbody>
 </table>
+<form method="post">
+  {% csrf_token %}
+  {% for fv in field_values %}
+    <label>{{ fv.field.label }}</label>
+
+    {% if fv.field.field_type == "text" or fv.field.field_type == "textarea" %}
+      <input type="text" name="field_{{ fv.id }}" value="{{ fv.text_value|default_if_none:'' }}">
+    {% elif fv.field.field_type == "select" %}
+      <select name="field_{{ fv.id }}">
+        {% for choice in fv.field.choices %}
+          <option value="{{ choice }}" {% if choice == fv.choice_value %}selected{% endif %}>{{ choice }}</option>
+        {% endfor %}
+      </select>
+    {% elif fv.field.field_type == "checkbox" %}
+      {% for choice in fv.field.choices %}
+        <label>
+          <input type="checkbox" name="field_{{ fv.id }}" value="{{ choice }}"
+            {% if fv.choice_value and choice in fv.choice_value %}checked{% endif %}>
+          {{ choice }}
+        </label>
+      {% endfor %}
+    {% endif %}
+
+  {% endfor %}
+  <button type="submit">Сохранить</button>
+</form>
 <a href="{% url 'admin_submission_list' %}">← Назад к списку</a>
 {% endblock %}
