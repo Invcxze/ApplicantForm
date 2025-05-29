@@ -33,13 +33,19 @@ class DynamicFormDetailView(DetailView):
 class DynamicFormSubmissionView(View):
     template_name = "forms/form_submit.html"
 
-    def get_form_class(self, dynamic_form):
+    def get_form_class(self, dynamic_form, submission=None):
         fields = {}
         for field in dynamic_form.fields.all():
+            if field.is_hidden:
+                continue
+
             field_kwargs = {
                 "label": field.label,
                 "required": field.required,
             }
+
+            if field.is_locked:
+                field_kwargs["disabled"] = True
 
             if field.field_type == "text":
                 fields[field.label] = CharField(**field_kwargs)
@@ -71,12 +77,13 @@ class DynamicFormSubmissionView(View):
         form = form_class(request.POST, request.FILES)
 
         if form.is_valid():
-            submission = FormSubmission.objects.create(
-                form=dynamic_form,
-                user=request.user if request.user.is_authenticated else None,
-                session_key=request.session.session_key or "",
-            )
+            # Создаем новую отправку формы
+            submission = FormSubmission.objects.create(form=dynamic_form)
+
             for field in dynamic_form.fields.all():
+                if field.is_hidden:
+                    continue
+
                 value = form.cleaned_data.get(field.label)
                 if field.field_type in ["file", "image"]:
                     field_value = FieldValue.objects.create(submission=submission, field=field)
@@ -91,7 +98,7 @@ class DynamicFormSubmissionView(View):
                 else:
                     FieldValue.objects.create(submission=submission, field=field, text_value=value)
 
-            return redirect("form_success", pk=submission.pk)
+            return redirect("form_submission_detail", pk=submission.pk)
 
         return render(request, self.template_name, {"form": form, "dynamic_form": dynamic_form})
 
