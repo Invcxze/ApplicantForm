@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import JSONField
 from simple_history.models import HistoricalRecords
 
+from config.storages import MinIOMediaStorage
 
 class DynamicForm(models.Model):
     name = models.CharField(max_length=255)
@@ -93,7 +94,7 @@ class FieldValue(models.Model):
 
 class FileValue(models.Model):
     field_value = models.ForeignKey(FieldValue, on_delete=models.CASCADE, related_name="file_values")
-    file = models.FileField(upload_to="forms/%Y/%m/%d/")
+    file = models.FileField(upload_to="forms/%Y/%m/%d/",  null=True, blank=True, storage=MinIOMediaStorage())
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     caption = models.CharField(max_length=255, blank=True)
