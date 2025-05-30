@@ -1,11 +1,13 @@
 from django.contrib import admin
 from django.db import models
-from django.urls import reverse
+from django.http import FileResponse
+from django.urls import reverse, path
 from django.utils.html import format_html
 from django.contrib.auth.models import User
 from django_json_widget.widgets import JSONEditorWidget
 from django_admin_relation_links import AdminChangeLinksMixin
 
+from .exporter import FormSubmissionExporter
 from .models import FileValue, FormSubmission, FieldValue, FormField, DynamicForm
 
 
@@ -43,11 +45,34 @@ class DynamicFormAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
     fields_link.short_description = "Поля"
 
     def submissions_link(self, obj):
-        count = obj.submissions.count()
-        url = reverse("admin:form_formsubmission_changelist") + f"?form__id__exact={obj.id}"
-        return format_html('<a href="{}">{} отправок</a>', url, count)
+        url = reverse("admin:form_export_submissions", args=[obj.id])
+        return format_html(
+            '<a href="{}">📥 Скачать все</a> | <a href="{}?form__id__exact={}">{} отправок</a>',
+            url,
+            reverse("admin:form_formsubmission_changelist"),
+            obj.id,
+            obj.submissions.count(),
+        )
 
     submissions_link.short_description = "Отправки"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "<int:form_id>/export-submissions/",
+                self.admin_site.admin_view(self.export_submissions),
+                name="form_export_submissions",
+            ),
+        ]
+        return custom_urls + urls
+
+    def export_submissions(self, request, form_id):
+        form = self.get_object(request, form_id)
+        submissions = form.submissions.all()
+        exporter = FormSubmissionExporter()
+        zip_file = exporter.export_submissions_to_zip(submissions)
+        return FileResponse(zip_file, as_attachment=True, filename=f"{form.name}_submissions.zip")
 
 
 @admin.register(FormField)
@@ -150,7 +175,6 @@ class FileValueAdmin(admin.ModelAdmin):
 admin.site.register(FileValue, FileValueAdmin)
 
 
-# Оптимизация UserAdmin
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = ("username", "email", "submissions_count")
     search_fields = ("username", "email")
