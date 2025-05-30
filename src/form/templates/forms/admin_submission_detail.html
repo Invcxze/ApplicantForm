@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Детали отправки #{{ submission.id }}</h1>
+<div class="container">
+  <h1>Детали отправки #{{ submission.id }}</h1>
 
 <p><strong>Форма:</strong> {{ submission.form.title }}</p>
 <p><strong>Пользователь:</strong> {{ submission.user.username|default:"Аноним" }}</p>
@@ -73,7 +74,7 @@
     {% endfor %}
   </tbody>
 </table>
-<form method="post">
+<form method="post" class="form-group">
   {% csrf_token %}
   {% for fv in field_values %}
     <label>{{ fv.field.label }}</label>
@@ -97,7 +98,10 @@
     {% endif %}
 
   {% endfor %}
-  <button type="submit">Сохранить</button>
+  </br>
+  <button type="submit" class="btn">Сохранить</button>
 </form>
-<a href="{% url 'admin_submission_list' %}">← Назад к списку</a>
+</br>
+<a class="btn" href="{% url 'admin_submission_list' %}">← Назад к списку</a>
+</div>
 {% endblock %}
