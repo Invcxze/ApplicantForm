@@ -12,6 +12,9 @@
     <div class="nav-container">
       <div class="left-nav">
         <a href="{% url 'form_list' %}" class="nav-link logo">Формы</a>
+        {% if user.is_authenticated and user.is_staff %}
+          <a href="{% url 'admin_submission_list' %}" class="nav-link">Администрирование</a>
+        {% endif %}
       </div>
       <div class="right-nav">
         {% if user.is_authenticated %}
