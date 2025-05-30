@@ -18,4 +18,3 @@ WORKDIR /app/src
 
 EXPOSE 8028
 CMD ["uv", "run", "manage.py", "runserver", "0.0.0.0:8028"]
-RUN ls -la /app/src
