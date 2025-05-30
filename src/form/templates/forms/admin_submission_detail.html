@@ -3,105 +3,112 @@
 <div class="container">
   <h1>Детали отправки #{{ submission.id }}</h1>
 
-<p><strong>Форма:</strong> {{ submission.form.title }}</p>
-<p><strong>Пользователь:</strong> {{ submission.user.username|default:"Аноним" }}</p>
-<p><strong>Дата отправки:</strong> {{ submission.created_at }}</p>
+  <p><strong>Форма:</strong> {{ submission.form.title }}</p>
+  <p><strong>Пользователь:</strong> {{ submission.user.username|default:"Аноним" }}</p>
+  <p><strong>Дата отправки:</strong> {{ submission.created_at }}</p>
 
-<h2>Ответы:</h2>
-<ul>
-  {% for value in field_values %}
-    <li>
-      <strong>{{ value.field.label }}:</strong>
-      {% if value.text_value %}
-        {{ value.text_value }}
-      {% elif value.choice_value %}
-        {{ value.choice_value|join:", " }}
-      {% endif %}
-      {% if value.field.field_type in "file,image" %}
-        <ul>
-          {% for f in file_values %}
-            {% if f.field_value == value %}
-              <li>
-                <a href="{{ f.file.url }}" target="_blank">
-                  {% if f.is_image %}
-                    <img src="{{ f.file.url }}" width="100">
-                  {% else %}
-                    {{ f.file.name }}
-                  {% endif %}
-                </a>
-              </li>
-            {% endif %}
-          {% endfor %}
-        </ul>
-      {% endif %}
-    </li>
-  {% endfor %}
-</ul>
-<h2>История изменений</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Дата</th>
-      <th>Пользователь</th>
-      <th>Тип изменения</th>
-      <th>Описание</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for record in history %}
-      <tr>
-        <td>{{ record.history_date|date:"Y-m-d H:i:s" }}</td>
-        <td>
-          {% if record.history_user %}
-            {{ record.history_user.get_full_name|default:record.history_user.username }}
+  <h2>Ответы:</h2>
+  <ul>
+    {% for value in field_values %}
+      <li>
+        <strong>{{ value.field.label }}:</strong>
+        {% if value.text_value %}
+          {{ value.text_value }}
+        {% elif value.choice_value %}
+          {% if value.is_choice_list %}
+            {{ value.choice_value|join:", " }}
           {% else %}
-            Система
+            {{ value.choice_value }}
           {% endif %}
-        </td>
-        <td>
-          {% if record.history_type == "+" %}
-            Создание
-          {% elif record.history_type == "~" %}
-            Изменение
-          {% elif record.history_type == "-" %}
-            Удаление
-          {% endif %}
-        </td>
-        <td>{{ record.history_change_reason|default:"—" }}</td>
-      </tr>
-    {% empty %}
-      <tr><td colspan="4">История изменений отсутствует</td></tr>
+        {% endif %}
+
+        {% if value.field.field_type in "file,image" %}
+          <ul>
+            {% for f in file_values %}
+              {% if f.field_value == value %}
+                <li>
+                  <a href="{{ f.file.url }}" target="_blank">
+                    {% if f.is_image %}
+                      <img src="{{ f.file.url }}" width="100">
+                    {% else %}
+                      {{ f.file.name }}
+                    {% endif %}
+                  </a>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
     {% endfor %}
-  </tbody>
-</table>
-<form method="post" class="form-group">
-  {% csrf_token %}
-  {% for fv in field_values %}
-    <label>{{ fv.field.label }}</label>
+  </ul>
 
-    {% if fv.field.field_type == "text" or fv.field.field_type == "textarea" %}
-      <input type="text" name="field_{{ fv.id }}" value="{{ fv.text_value|default_if_none:'' }}">
-    {% elif fv.field.field_type == "select" %}
-      <select name="field_{{ fv.id }}">
-        {% for choice in fv.field.choices %}
-          <option value="{{ choice }}" {% if choice == fv.choice_value %}selected{% endif %}>{{ choice }}</option>
-        {% endfor %}
-      </select>
-    {% elif fv.field.field_type == "checkbox" %}
-      {% for choice in fv.field.choices %}
-        <label>
-          <input type="checkbox" name="field_{{ fv.id }}" value="{{ choice }}"
-            {% if fv.choice_value and choice in fv.choice_value %}checked{% endif %}>
-          {{ choice }}
-        </label>
+  <h2>История изменений</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Дата</th>
+        <th>Пользователь</th>
+        <th>Тип изменения</th>
+        <th>Описание</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in history %}
+        <tr>
+          <td>{{ record.history_date|date:"Y-m-d H:i:s" }}</td>
+          <td>
+            {% if record.history_user %}
+              {{ record.history_user.get_full_name|default:record.history_user.username }}
+            {% else %}
+              Система
+            {% endif %}
+          </td>
+          <td>
+            {% if record.history_type == "+" %}
+              Создание
+            {% elif record.history_type == "~" %}
+              Изменение
+            {% elif record.history_type == "-" %}
+              Удаление
+            {% endif %}
+          </td>
+          <td>{{ record.history_change_reason|default:"—" }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4">История изменений отсутствует</td></tr>
       {% endfor %}
-    {% endif %}
+    </tbody>
+  </table>
 
-  {% endfor %}
-  </br>
-  <button type="submit" class="btn">Сохранить</button>
-</form>
-</br>
-<a class="btn" href="{% url 'admin_submission_list' %}">← Назад к списку</a>
+  <form method="post" class="form-group">
+    {% csrf_token %}
+    {% for fv in field_values %}
+      <label>{{ fv.field.label }}</label>
+
+      {% if fv.field.field_type == "text" or fv.field.field_type == "textarea" %}
+        <input type="text" name="field_{{ fv.id }}" value="{{ fv.text_value|default_if_none:'' }}">
+      {% elif fv.field.field_type == "select" %}
+        <select name="field_{{ fv.id }}">
+          {% for choice in fv.field.choices %}
+            <option value="{{ choice }}" {% if choice == fv.choice_value %}selected{% endif %}>{{ choice }}</option>
+          {% endfor %}
+        </select>
+      {% elif fv.field.field_type == "checkbox" %}
+        {% for choice in fv.field.choices %}
+          <label>
+            <input type="checkbox" name="field_{{ fv.id }}" value="{{ choice }}"
+              {% if fv.choice_value and choice in fv.choice_value %}checked{% endif %}>
+            {{ choice }}
+          </label>
+        {% endfor %}
+      {% endif %}
+
+    {% endfor %}
+    <br>
+    <button type="submit" class="btn">Сохранить</button>
+  </form>
+  <br>
+  <a class="btn" href="{% url 'admin_submission_list' %}">← Назад к списку</a>
 </div>
 {% endblock %}
