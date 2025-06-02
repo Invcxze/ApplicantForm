@@ -39,7 +39,7 @@ services:
       curl -O https://dl.min.io/client/mc/release/linux-amd64/mc &&
       chmod +x mc &&
       ./mc alias set external http://146.255.188.248:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
-      ./mc mb external/local-bucket-shop || true &&
+      ./mc mb external/local-bucket-form || true &&
       ./mc anonymous set download external/local-bucket-shop || true
       "
     environment:
