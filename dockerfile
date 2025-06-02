@@ -6,15 +6,13 @@ RUN curl --proto '=https' --tlsv1.2 -LsSf https://github.com/astral-sh/uv/releas
 
 ENV PATH="/root/.local/bin:${PATH}"
 
-WORKDIR /app
+WORKDIR /app/src
 
 COPY pyproject.toml uv.lock ./
 
 RUN uv sync
 
 COPY . .
-
-WORKDIR /app/src
 
 EXPOSE 8028
 CMD ["uv", "run", "manage.py", "runserver", "0.0.0.0:8028"]
