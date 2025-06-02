@@ -11,7 +11,7 @@ services:
     container_name: forms-backend
     command: sh -c "uv run src/manage.py migrate && uv run src/manage.py runserver 0.0.0.0:8028"
     volumes:
-      - ./src:/app/src
+      - .:/app
     ports:
       - "8028:8028"
     env_file:
