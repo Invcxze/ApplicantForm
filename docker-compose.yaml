@@ -32,45 +32,21 @@ services:
 #    networks:
 #      - app-network
 
-  minio:
-    image: minio/minio:RELEASE.2023-05-04T21-44-30Z
-    container_name: form-minio
-    command: server /data --console-address ":9004"
-    ports:
-      - "9003:9003"
-      - "9004:9004"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    volumes:
-      - minio-data:/data
-    networks:
-      - app-network
-
   minio-init:
     image: alpine:latest
-    platform: linux/amd64
-    depends_on:
-      - minio
     entrypoint: >
       /bin/sh -c "
       apk add --no-cache curl &&
       curl -O https://dl.min.io/client/mc/release/linux-amd64/mc &&
       chmod +x mc &&
-      ./mc alias set local http://146.255.188.248:9004 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
-      ./mc mb local/local-bucket-shop || true &&
-      ./mc policy set download local/local-bucket-shop || true
-      ./mc admin config set local api.cors.allow-origin="*"
-      ./mc admin config set local api.cors.allowed-headers="*"
-      ./mc admin config set local api.cors.allowed-methods="GET,PUT,POST,DELETE"
-      ./mc admin service restart local
+      ./mc alias set external http://146.255.188.248:9001 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
+      ./mc mb external/local-bucket-shop || true &&
+      ./mc anonymous set download external/local-bucket-shop || true
       "
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     networks:
       - app-network
-
 volumes:
   pgdata:
-  minio-data:
