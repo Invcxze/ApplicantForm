@@ -6,7 +6,7 @@ RUN curl --proto '=https' --tlsv1.2 -LsSf https://github.com/astral-sh/uv/releas
 
 ENV PATH="/root/.local/bin:${PATH}"
 
-WORKDIR /app/src
+WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
 
