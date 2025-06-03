@@ -35,22 +35,5 @@ services:
   #    networks:
   #      - app-network
 
-  minio-init:
-    image: alpine:latest
-    entrypoint: >
-      /bin/sh -c "
-      apk add --no-cache curl &&
-      curl -O https://dl.min.io/client/mc/release/linux-amd64/mc &&
-      chmod +x mc &&
-      ./mc alias set external http://146.255.188.248:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
-      ./mc mb external/local-bucket-form || true &&
-      ./mc anonymous set download external/local-bucket-form || true
-      ./mc mirror src/staticfiles external/local-bucket-form
-      "
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    networks:
-      - app-network
 volumes:
   pgdata:
