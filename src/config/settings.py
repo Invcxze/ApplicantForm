@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -140,23 +141,9 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = '/login/'
 
-STATICFILES_STORAGE = "config.storages.StaticStorage"
-DEFAULT_FILE_STORAGE = "config.urls.MinIOMediaStorage"
-AWS_QUERYSTRING_AUTH = False
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_USE_SSL = False
-AWS_S3_VERIFY = False
-AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
-AWS_S3_ACCESS_KEY_ID = os.getenv("AWS_S3_ACCESS_KEY_ID")
-AWS_S3_SECRET_ACCESS_KEY = os.getenv("AWS_S3_SECRET_ACCESS_KEY")
-AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
-AWS_QUERYSTRING_EXPIRE = int(os.getenv("AWS_QUERYSTRING_EXPIRE", 60 * 30))
-STATIC_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/static/"
-MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/media/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-MEDIA_ROOT = BASE_DIR / 'uploads'
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
-if DEBUG is False:
-    STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_ROOT = BASE_DIR / 'media'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
