@@ -13,7 +13,7 @@ services:
       sh -c "
         uv run manage.py migrate &&
         uv run manage.py collectstatic --noinput &&
-        uv run src/manage.py runserver 0.0.0.0:8028
+        uv run manage.py runserver 0.0.0.0:8028
       "
     volumes:
       - .:/app
