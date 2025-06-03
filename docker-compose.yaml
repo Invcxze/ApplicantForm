@@ -9,7 +9,14 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: forms-backend
-    command: sh -c "uv run src/manage.py migrate && uv run src/manage.py runserver 0.0.0.0:8028"
+    command: >
+      sh -c "
+        uv run src/manage.py migrate &&
+        uv run src/manage.py collectstatic --noinput &&
+        mc alias set localminio http://form-minio:9000 minioadmin minioadmin &&
+        mc mirror src/staticfiles localminio/local-bucket-form/static/ &&
+        uv run src/manage.py runserver 0.0.0.0:8028
+      "
     volumes:
       - .:/app
       - ./staticfiles:/app/staticfiles
@@ -17,8 +24,6 @@ services:
       - "8028:8028"
     env_file:
       - .env
-#    depends_on:
-#      #      - db
     networks:
       - app-network
 
