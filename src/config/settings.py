@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-4)mpl6(_=2yto=zmwc&0c%18^ct5r*1we+%(746p%r(c(3m-ye'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["146.255.188.248"]
 
@@ -141,7 +141,7 @@ LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = '/login/'
 
 STATICFILES_STORAGE = "config.storages.StaticStorage"
-DEFAULT_FILE_STORAGE = "config.storages.MediaStorage"
+DEFAULT_FILE_STORAGE = "config.urls.MinIOMediaStorage"
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
