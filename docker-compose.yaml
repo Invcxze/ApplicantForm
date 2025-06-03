@@ -11,10 +11,8 @@ services:
     container_name: forms-backend
     command: >
       sh -c "
-        uv run src/manage.py migrate &&
-        uv run src/manage.py collectstatic --noinput &&
-        mc alias set localminio http://form-minio:9000 minioadmin minioadmin &&
-        mc mirror src/staticfiles localminio/local-bucket-form/static/ &&
+        uv run manage.py migrate &&
+        uv run manage.py collectstatic --noinput &&
         uv run src/manage.py runserver 0.0.0.0:8028
       "
     volumes:
@@ -46,7 +44,8 @@ services:
       chmod +x mc &&
       ./mc alias set external http://146.255.188.248:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
       ./mc mb external/local-bucket-form || true &&
-      ./mc anonymous set download external/local-bucket-shop || true
+      ./mc anonymous set download external/local-bucket-form || true
+      ./mc mirror src/staticfiles external/local-bucket-form
       "
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
