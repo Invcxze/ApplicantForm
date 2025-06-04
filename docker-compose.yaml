@@ -24,16 +24,18 @@ services:
       - .env
     networks:
       - app-network
+    depends_on:
+      - db
 
-  #  db:
-  #    image: postgres:15
-  #    env_file: .env
-  #    volumes:
-  #      - pgdata:/var/lib/postgresql/data
-  #    ports:
-  #      - "5433:5432"
-  #    networks:
-  #      - app-network
+  db:
+    image: postgres:15
+    env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5434:5434"
+    networks:
+      - app-network
 
 volumes:
   pgdata:
