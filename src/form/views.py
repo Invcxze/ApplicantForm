@@ -26,6 +26,21 @@ class DynamicFormListView(ListView):
     template_name = "forms/form_list.html"
     context_object_name = "forms"
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            finished_submissions = FormSubmission.objects.filter(user=user).values_list("form_id", flat=True)
+        else:
+            session_key = self.request.session.session_key
+            if not session_key:
+                self.request.session.create()
+                session_key = self.request.session.session_key
+            finished_submissions = FormSubmission.objects.filter(session_key=session_key).values_list(
+                "form_id", flat=True
+            )
+
+        return DynamicForm.objects.exclude(id__in=finished_submissions)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
