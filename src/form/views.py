@@ -79,7 +79,8 @@ class DynamicFormSubmissionView(View):
                 field_kwargs["choices"] = [(c, c) for c in field.choices or []]
                 fields[field.label] = MultipleChoiceField(**field_kwargs)
             elif field.field_type in ["file", "image"]:
-                fields[field.label] = FileField(**field_kwargs)
+                field_kwargs.pop("required", None)
+                fields[field.label] = FileField(required=False, **field_kwargs)
 
         return type("DynamicForm", (Form,), fields)
 
@@ -176,6 +177,7 @@ class FormSubmissionUpdateView(View):
                 field_kwargs["choices"] = [(c, c) for c in field.choices or []]
                 fields[field.label] = MultipleChoiceField(**field_kwargs)
             elif field.field_type in ["file", "image"]:
+                field_kwargs.pop("required", None)
                 fields[field.label] = FileField(required=False, **field_kwargs)
 
         return type("DynamicForm", (Form,), fields)
