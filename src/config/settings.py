@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'form.apps.FormConfig',
     'django_json_widget',
     'django_admin_relation_links',
-    "storages",
 ]
 
 MIDDLEWARE = [
